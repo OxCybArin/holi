@@ -12,24 +12,16 @@ body {
     overflow: hidden;
     font-family: 'Poppins', sans-serif;
     text-align: center;
-    background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
-    background-size: 400% 400%;
-    animation: gradientMove 8s ease infinite;
+    background: radial-gradient(circle at center, #1a1a2e, #0f0f1a);
     color: white;
-}
-
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
 }
 
 /* Password Screen */
 #passwordScreen {
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 100vh;
-    background: rgba(0,0,0,0.85);
+    background: #000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,13 +33,11 @@ input {
     padding: 10px;
     border-radius: 20px;
     border: none;
-    outline: none;
     margin-top: 10px;
     text-align: center;
 }
 
 button {
-    margin-top: 15px;
     padding: 10px 20px;
     border-radius: 20px;
     border: none;
@@ -55,18 +45,18 @@ button {
     background: #ff4081;
     color: white;
     transition: 0.3s;
+    margin: 5px;
 }
 
 button:hover {
     transform: scale(1.1);
 }
 
-/* Main Content */
 .container {
-    position: relative;
-    z-index: 2;
-    margin-top: 15%;
+    margin-top: 10%;
     display: none;
+    z-index: 2;
+    position: relative;
 }
 
 h1 {
@@ -74,32 +64,36 @@ h1 {
     font-size: 3rem;
 }
 
-p {
-    width: 70%;
-    margin: auto;
-    font-size: 1.2rem;
-}
-
-/* Falling Color Powder */
+/* Powder Splash */
 .powder {
     position: absolute;
-    width: 12px;
-    height: 12px;
     border-radius: 50%;
-    opacity: 0.7;
-    animation: fall linear infinite;
+    opacity: 0.9;
+    filter: blur(3px);
+    animation: fall linear forwards;
 }
 
 @keyframes fall {
-    from { transform: translateY(-100px); }
-    to { transform: translateY(100vh); }
+    from { transform: translateY(-100px) scale(0.8) rotate(0deg); }
+    to { transform: translateY(100vh) scale(1.4) rotate(360deg); }
+}
+
+/* Hearts */
+.heart {
+    position: absolute;
+    font-size: 20px;
+    animation: floatUp 2s ease-out forwards;
+}
+
+@keyframes floatUp {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-150px); }
 }
 </style>
 </head>
 
 <body>
 
-<!-- Password Screen -->
 <div id="passwordScreen">
     <h2>Enter Secret Code 💕</h2>
     <input type="password" id="passwordInput" placeholder="Enter password">
@@ -107,14 +101,22 @@ p {
     <p id="error" style="color:red;"></p>
 </div>
 
-<!-- Main Content -->
 <div class="container" id="mainContent">
     <h1>Happy Holi Bhanupriya ❤️</h1>
-    <p>
+    <p style="width:70%; margin:auto;">
         This Holi, I don’t just want to put colors on your cheeks...
-        I want to fill your whole life with love, laughter, and forever happiness.
-        You are the sweetest color in my world.
+        I want to fill your whole life with love, laughter and forever happiness.
+        You are the most beautiful color in my world.
     </p>
+
+    <h2 style="margin-top:40px;">Will you be my forever Holi partner? 💖</h2>
+
+    <div style="margin-top:20px; position:relative; height:120px;">
+        <button id="yesBtn" onclick="sayYes()">YES 💕</button>
+        <button id="noBtn" style="position:absolute;" onmouseover="moveNo()">NO 🙈</button>
+    </div>
+
+    <p id="loveMessage" style="margin-top:20px; font-size:1.3rem;"></p>
 </div>
 
 <audio id="bgMusic" loop>
@@ -122,7 +124,7 @@ p {
 </audio>
 
 <script>
-const correctPassword = "BILLITERIMAUSI";
+const correctPassword = "bhanu123"; // change if you want
 
 function checkPassword() {
     const input = document.getElementById("passwordInput").value;
@@ -136,21 +138,57 @@ function checkPassword() {
     }
 }
 
+/* Powder Splash Effect */
 function startPowder() {
-    setInterval(createPowder, 150);
+    setInterval(createPowder, 120);
 }
 
 function createPowder() {
     const powder = document.createElement("div");
     powder.classList.add("powder");
+
+    const size = Math.random() * 40 + 20;
+    powder.style.width = size + "px";
+    powder.style.height = size + "px";
+
+    const colors = ["#ff1744","#ff9100","#ffd600","#00e5ff","#d500f9","#00e676"];
+    powder.style.background = colors[Math.floor(Math.random() * colors.length)];
+
     powder.style.left = Math.random() * window.innerWidth + "px";
-    powder.style.background = `hsl(${Math.random()*360},100%,60%)`;
-    powder.style.animationDuration = (Math.random() * 3 + 2) + "s";
+    powder.style.animationDuration = (Math.random() * 3 + 3) + "s";
+
     document.body.appendChild(powder);
 
-    setTimeout(() => {
-        powder.remove();
-    }, 5000);
+    setTimeout(() => powder.remove(), 6000);
+}
+
+/* NO Button Escape */
+function moveNo() {
+    const noBtn = document.getElementById("noBtn");
+    const container = noBtn.parentElement;
+
+    const maxX = container.clientWidth - noBtn.clientWidth;
+    const maxY = container.clientHeight - noBtn.clientHeight;
+
+    noBtn.style.left = Math.random() * maxX + "px";
+    noBtn.style.top = Math.random() * maxY + "px";
+}
+
+/* YES Button Effect */
+function sayYes() {
+    document.getElementById("loveMessage").innerHTML =
+        "Yayyyy ❤️ I knew it! Happy Holi my forever color 🎨💕";
+
+    for (let i = 0; i < 20; i++) {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.top = (window.innerHeight - 100) + "px";
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 2000);
+    }
 }
 </script>
 
